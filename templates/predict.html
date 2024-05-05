@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Predicted Time</h1>
+        <p class="prediction">The predicted time is: {{ prediction }} Weeks</p>
+        <a href="/" class="btn">Go Back</a>
+    </div>
+</body>
+</html>
