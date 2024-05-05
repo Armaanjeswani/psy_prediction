@@ -4,4 +4,3 @@ gunicorn==21.2.0
 numpy
 keras==3.3.3
 Tensorflow
-TensorRT
