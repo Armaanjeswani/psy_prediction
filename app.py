@@ -5,7 +5,7 @@ from keras.models import load_model
 app = Flask(__name__)
 
 # Load the pre-trained model
-model = load_model('lstm_model.h5')
+model = load_model('psy_prediction.h5')
 
 @app.route('/')
 def index():
