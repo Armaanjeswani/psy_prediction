@@ -1,14 +1,12 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-from keras.models import Sequential
-from keras.layers import LSTM, Dense
-from keras.models import model_from_json
-from keras.models import load_model
-import json
+from sklearn.metrics import mean_squared_error
+from tensorflow.keras.models import Sequential, load_model
+from tensorflow.keras.layers import LSTM, Dense
 
 # Load data
-data = pd.read_csv("D:\Psy\psy_prediction\physiomize data1.csv")
+data = pd.read_csv("D:/Psy/psy_prediction/physiomize data2.csv")
 
 # Separate features and target variable
 X = data.drop('time', axis=1)
@@ -37,27 +35,16 @@ model.compile(optimizer='adam', loss='mean_squared_error')
 # Train the model
 model.fit(X_train, Y_train, epochs=100, batch_size=32)
 
-# Save the model architecture as JSON
-model_json = model.to_json()
-with open("psy_prediction_architecture.json", "w") as json_file:
-    json_file.write(model_json)
+# Save the entire model to a single HDF5 file
+model.save("psy_prediction_model.h5")
 
-# Save the trained model weights
-model.save("psy_prediction_weights.h5")
+# Load the model from the HDF5 file
+loaded_model = load_model("psy_prediction_model.h5")
 
-# Load the model architecture from JSON
-with open('psy_prediction_architecture.json', 'r') as json_file:
-    loaded_model_json = json_file.read()
+# Define scaling factor
+scaling_factor = 0.8  # Adjust this scaling factor as needed
 
-# Load the architecture
-loaded_model = model_from_json(loaded_model_json)
-
-# Compile the loaded model with loss and metrics
-loaded_model.compile(optimizer='adam', loss='mean_squared_error')
-
-# Load the trained model weights
-loaded_model.load_weights('psy_prediction_weights.h5')
-
+# Prediction using the loaded model
 num_weeks = int(input("Enter the number of weeks: "))
 input_data = []
 for i in range(num_weeks):
@@ -67,8 +54,6 @@ for i in range(num_weeks):
 input_array = np.reshape(np.array(input_data), (1, num_weeks, 1))
 
 prediction = loaded_model.predict(input_array)
-scaling_factor = 0.8  # Adjust this scaling factor as needed
-noise = np.random.normal(loc=0, scale=0.1, size=prediction.shape)  # Adding noise to the prediction
-predicted_time = int((prediction[0][0] + noise[0][0]) * max_time * scaling_factor)  # Scale the prediction back to the original range with scaling factor
+predicted_time = int(prediction[0][0] * max_time * scaling_factor)
 
-print("Predicted time:", predicted_time, "Weeks")
+print("Predicted time using loaded model:", predicted_time, "Weeks")
